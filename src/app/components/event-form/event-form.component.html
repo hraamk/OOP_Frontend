@@ -1,0 +1,50 @@
+<div class="container mx-auto p-4">
+    <div class="max-w-lg mx-auto">
+      <h1 class="text-2xl font-bold mb-4">{{isEditing ? 'Edit' : 'Create'}} Event</h1>
+      
+      <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Event Name</label>
+          <input type="text" formControlName="name" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        </div>
+  
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea formControlName="description" rows="3"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+        </div>
+  
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Total Tickets</label>
+          <input type="number" formControlName="totalTickets" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        </div>
+  
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Price</label>
+          <input type="number" formControlName="price" step="0.01"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        </div>
+  
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Event Date</label>
+          <input type="datetime-local" formControlName="eventDate" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        </div>
+  
+        <div class="flex space-x-4">
+          <button type="submit"
+            class="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            [disabled]="!eventForm.valid">
+            {{isEditing ? 'Update' : 'Create'}} Event
+          </button>
+          <button type="button"
+            class="flex-1 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            routerLink="/events">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
