@@ -1,0 +1,97 @@
+<div class="container mx-auto px-8 py-12 bg-white">
+  <div class="max-w-xl mx-auto">
+    <!-- Configuration Form -->
+    <form [formGroup]="configForm" (ngSubmit)="startSimulation()"
+      *ngIf="!status?.running" class="space-y-8">
+      <h1 class="text-4xl font-light text-gray-900 mb-12">Simulation Setup</h1>
+      
+      <div class="space-y-6">
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <input type="number" formControlName="vendorCount"
+            class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+            placeholder="Number of Vendors">
+        </div>
+
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <input type="number" formControlName="customerCount"
+            class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+            placeholder="Number of Customers">
+        </div>
+
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <input type="number" formControlName="ticketReleaseRate"
+            class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+            placeholder="Ticket Release Rate">
+        </div>
+
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <input type="number" formControlName="customerRetrievalRate"
+            class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+            placeholder="Customer Retrieval Rate">
+        </div>
+
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <input type="number" formControlName="maxTicketCapacity"
+            class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+            placeholder="Max Ticket Capacity">
+        </div>
+      </div>
+
+      <button type="submit"
+        [disabled]="!configForm.valid"
+        class="w-full bg-black hover:bg-gray-800 text-white text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:hover:bg-black">
+        Start Simulation
+      </button>
+    </form>
+
+    <!-- Simulation Status Display -->
+    <div *ngIf="status?.running" class="space-y-8">
+      <h1 class="text-4xl font-light text-gray-900">Simulation Status</h1>
+      
+      <!-- Status Cards -->
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Vendor Count -->
+        <div class="bg-gray-50 p-6 rounded-2xl">
+          <div class="text-gray-500 text-lg mb-2">Vendors</div>
+          <div class="text-3xl font-medium text-gray-900">{{status?.vendorCount || 0}}</div>
+        </div>
+        
+        <!-- Customer Count -->
+        <div class="bg-gray-50 p-6 rounded-2xl">
+          <div class="text-gray-500 text-lg mb-2">Customers</div>
+          <div class="text-3xl font-medium text-gray-900">{{status?.customerCount || 0}}</div>
+        </div>
+        
+        <!-- Active Threads -->
+        <div class="col-span-2 bg-gray-50 p-6 rounded-2xl">
+          <div class="text-gray-500 text-lg mb-2">Active Threads</div>
+          <div class="text-3xl font-medium text-gray-900">{{status?.activeThreadCount || 0}}</div>
+        </div>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="flex gap-4 pt-4">
+        <button (click)="stopSimulation()"
+          class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200">
+          Stop
+        </button>
+        
+        <button (click)="pauseSimulation()" *ngIf="!isPaused"
+          class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200">
+          Pause
+        </button>
+        
+        <button (click)="resumeSimulation()" *ngIf="isPaused"
+          class="flex-1 bg-black hover:bg-gray-800 text-white text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200">
+          Resume
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage"
+      class="mt-8 bg-red-50 px-6 py-4 rounded-2xl">
+      <p class="text-red-600">{{errorMessage}}</p>
+    </div>
+  </div>
+</div>

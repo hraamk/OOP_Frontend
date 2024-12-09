@@ -1,0 +1,54 @@
+<div class="container mx-auto p-8 bg-white">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-4xl font-light mb-12 text-gray-900">{{isEditing ? 'Edit' : 'New'}} Event</h1>
+    
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="space-y-8">
+      <div class="space-y-6">
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <input type="text" formControlName="name"
+            class="w-full text-xl pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+            placeholder="Event Name">
+        </div>
+
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <textarea formControlName="description" rows="4"
+            class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400 resize-none"
+            placeholder="Description"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-8">
+          <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+            <input type="number" formControlName="totalTickets"
+              class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+              placeholder="Total Tickets">
+          </div>
+
+          <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+            <input type="number" formControlName="price" step="0.01"
+              class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+              placeholder="Price">
+          </div>
+        </div>
+
+        <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+          <input type="datetime-local" formControlName="eventDate"
+            class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors">
+        </div>
+      </div>
+
+      <div class="flex space-x-6 pt-8">
+        <button type="submit"
+          class="flex-1 bg-black hover:bg-gray-800 text-white text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200"
+          [disabled]="!eventForm.valid">
+          {{isEditing ? 'Update' : 'Create'}} Event
+        </button>
+        
+        <button type="button"
+          class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200"
+          routerLink="/admin/events">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

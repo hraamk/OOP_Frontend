@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { EventService } from '../../services/event.service';
-import { Event } from '../../models/event.model';
+import { EventService } from '../../../services/event.service';
+import { Event } from '../../../models/event.model';
 
 @Component({
   selector: 'app-event-form',
@@ -66,7 +66,7 @@ export class EventFormComponent implements OnInit {
         : this.eventService.createEvent(eventData);
 
       request.subscribe(
-        () => this.router.navigate(['/events']),
+        () => this.router.navigate(['/admin/events']),
         error => console.error('Error saving event:', error)
       );
     }

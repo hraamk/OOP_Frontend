@@ -1,0 +1,80 @@
+<div class="container mx-auto px-8 py-12 bg-white">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-12">
+    <h1 class="text-4xl font-light text-gray-900">Events</h1>
+    <button
+      routerLink="/admin/events/new"
+      class="bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-full transition-colors duration-200 flex items-center gap-2">
+      <span>Create Event</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-16">
+    <div class="text-lg text-gray-400">Loading events...</div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" 
+    class="bg-red-50 px-6 py-4 rounded-2xl mb-8 border border-red-100">
+    <p class="text-red-600">{{ error }}</p>
+  </div>
+
+  <!-- Events Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div *ngFor="let event of events"
+      class="bg-gray-50 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-200">
+      <!-- Event Header -->
+      <div class="mb-6">
+        <h2 class="text-2xl font-medium text-gray-900">{{ event.name }}</h2>
+        <p class="text-gray-500 mt-2 text-lg">{{ event.description }}</p>
+      </div>
+
+      <!-- Event Details -->
+      <div class="space-y-3 text-base mb-8">
+        <div class="flex justify-between items-center">
+          <span class="text-gray-500">Date</span>
+          <span class="text-gray-900">{{ formatDate(event.eventDate) }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-500">Total Tickets</span>
+          <span class="text-gray-900">{{ event.totalTickets }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-500">Price</span>
+          <span class="text-gray-900">{{ formatPrice(event.price) }}</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3">
+        <button
+          [routerLink]="['/admin/events', event.id, 'simulation']"
+          class="flex-1 bg-black hover:bg-gray-800 text-white py-3 px-4 rounded-full text-base transition-colors">
+          Simulate
+        </button>
+        <button
+          [routerLink]="['/admin/events/edit', event.id]"
+          class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-3 px-4 rounded-full text-base transition-colors">
+          Edit
+        </button>
+        <button
+          (click)="deleteEvent(event.id!)"
+          class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-3 px-4 rounded-full text-base transition-colors">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && events.length === 0"
+    class="text-center py-24">
+    <p class="text-xl text-gray-400 mb-6">No events found. Create your first event to get started.</p>
+    <button
+      routerLink="/admin/events/new"
+      class="bg-black hover:bg-gray-800 text-white font-medium py-3 px-8 rounded-full transition-colors duration-200">
+      Create Event
+    </button>
+  </div>
+</div>

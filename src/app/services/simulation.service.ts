@@ -12,20 +12,20 @@ export class SimulationService {
 
   constructor(private http: HttpClient) { }
 
-  startSimulation(eventId: string, config: Configuration): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${eventId}/start`, config);
+  startSimulation(eventId: string, config: Configuration): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/start`, config);
   }
-
-  stopSimulation(eventId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${eventId}/stop`, {});
+  
+  stopSimulation(eventId: string): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/stop`, {});
   }
-
-  pauseSimulation(eventId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${eventId}/pause`, {});
+  
+  pauseSimulation(eventId: string): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/pause`, {});
   }
-
-  resumeSimulation(eventId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${eventId}/resume`, {});
+  
+  resumeSimulation(eventId: string): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/resume`, {});
   }
 
   getSimulationStatus(eventId: string): Observable<SimulationStatus> {

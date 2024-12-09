@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { EventListComponent } from './components/event-list/event-list.component';
-import { EventFormComponent } from './components/event-form/event-form.component';
-import { SimulationControlComponent } from './components/simulation-control/simulation-control.component';
+import { EventListComponent } from './components/admin/event-list/event-list.component';
+import { EventFormComponent } from './components/admin/event-form/event-form.component';
+import { SimulationControlComponent } from './components/simulation/simulation-control/simulation-control.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'events', pathMatch: 'full' },
