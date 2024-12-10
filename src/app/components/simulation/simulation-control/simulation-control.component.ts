@@ -270,6 +270,66 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
         }
       });
   }
+  increaseVendors(count: number = 1) {
+    if (this.eventId) {
+      this.simulationService.increaseVendorCount(this.eventId, count).subscribe({
+        next: (status) => {
+          this.status = status;
+          this.errorMessage = null;
+        },
+        error: (error) => {
+          console.error('Error increasing vendor count:', error);
+          this.errorMessage = 'Failed to increase vendor count. Please try again.';
+        }
+      });
+    }
+  }
+
+  decreaseVendors(count: number = 1) {
+    if (this.eventId) {
+      this.simulationService.decreaseVendorCount(this.eventId, count).subscribe({
+        next: (status) => {
+          this.status = status;
+          this.errorMessage = null;
+        },
+        error: (error) => {
+          console.error('Error decreasing vendor count:', error);
+          this.errorMessage = 'Failed to decrease vendor count. Please try again.';
+        }
+      });
+    }
+  }
+
+  increaseCustomers(count: number = 1) {
+    if (this.eventId) {
+      this.simulationService.increaseCustomerCount(this.eventId, count).subscribe({
+        next: (status) => {
+          this.status = status;
+          this.errorMessage = null;
+        },
+        error: (error) => {
+          console.error('Error increasing customer count:', error);
+          this.errorMessage = 'Failed to increase customer count. Please try again.';
+        }
+      });
+    }
+  }
+
+  decreaseCustomers(count: number = 1) {
+    if (this.eventId) {
+      this.simulationService.decreaseCustomerCount(this.eventId, count).subscribe({
+        next: (status) => {
+          this.status = status;
+          this.errorMessage = null;
+        },
+        error: (error) => {
+          console.error('Error decreasing customer count:', error);
+          this.errorMessage = 'Failed to decrease customer count. Please try again.';
+        }
+      });
+    }
+  }
+
 
   private stopStatusPolling() {
     if (this.statusSubscription) {

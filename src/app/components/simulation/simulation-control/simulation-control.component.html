@@ -1,42 +1,11 @@
 <div class="container mx-auto px-8 py-12 bg-white">
-  <div class="max-w-xl mx-auto">
-    <!-- Templates Section -->
-    <div *ngIf="!status?.running" class="mb-12">
-      <h2 class="text-2xl font-light text-gray-900 mb-6">Saved Configurations</h2>
-      
-      <!-- Template List -->
-      <div class="space-y-4 mb-8">
-        <div *ngFor="let template of templates" 
-             class="p-4 border rounded-lg hover:shadow-md transition-shadow duration-200">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium">{{template.templateName}}</h3>
-            <div class="space-x-2">
-              <button (click)="loadTemplate(template)"
-                      class="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
-                Use
-              </button>
-              <button (click)="deleteTemplate(template)"
-                      class="px-4 py-2 text-sm bg-red-50 hover:bg-red-100 text-red-600 rounded-full transition-colors">
-                Delete
-              </button>
-            </div>
-          </div>
-          <div class="mt-2 grid grid-cols-2 gap-4 text-sm text-gray-500">
-            <div>Vendors: {{template.vendorCount}}</div>
-            <div>Customers: {{template.customerCount}}</div>
-            <div>Release Rate: {{template.ticketReleaseRate}}</div>
-            <div>Retrieval Rate: {{template.customerRetrievalRate}}</div>
-            <div class="col-span-2">Max Capacity: {{template.maxTicketCapacity}}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Configuration Form -->
-      <form [formGroup]="configForm" (ngSubmit)="startSimulation()" class="space-y-8">
-        <h1 class="text-4xl font-light text-gray-900 mb-12">Simulation Setup</h1>
-        
+  <h1 class="text-4xl font-light text-gray-900 mb-12 text-center">Simulation Setup</h1>
+  
+  <div class="grid grid-cols-2 gap-8 max-w-6xl mx-auto">
+    <!-- Left Column: Configuration Form -->
+    <div *ngIf="!status?.running">
+      <form [formGroup]="configForm" (ngSubmit)="startSimulation()" class="space-y-6">
         <div class="space-y-6">
-          <!-- Keep existing form inputs -->
           <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
             <input type="number" formControlName="vendorCount"
               class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
@@ -69,58 +38,118 @@
         </div>
 
         <!-- Save Template Form -->
-        <!-- Template Name Input -->
-    <div class="pt-6 border-t border-gray-200">
-      <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
-        <input type="text" 
-               formControlName="templateName"
-               class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
-               placeholder="Save as template name (optional)">
-      </div>
-    </div>
+        <div class="pt-6 border-t border-gray-200">
+          <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+            <input type="text" 
+                   formControlName="templateName"
+                   class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+                   placeholder="Save as template name (optional)">
+          </div>
+        </div>
 
         <!-- Submit Buttons -->
-    <div class="flex gap-4">
-      <button type="submit"
-        [disabled]="!configForm.valid"
-        class="flex-1 bg-black hover:bg-gray-800 text-white text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:hover:bg-black">
-        Start Simulation
-      </button>
-      
-      <button type="button" 
-        (click)="saveTemplate()"
-        [disabled]="!configForm.get('templateName')?.value"
-        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200 disabled:opacity-50">
-        Save Template
-      </button>
-    </div>
+        <div class="flex gap-4">
+          <button type="submit"
+            [disabled]="!configForm.valid"
+            class="flex-1 bg-black hover:bg-gray-800 text-white text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:hover:bg-black">
+            Start Simulation
+          </button>
+          
+          <button type="button" 
+            (click)="saveTemplate()"
+            [disabled]="!configForm.get('templateName')?.value"
+            class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 text-lg font-medium py-3 px-6 rounded-full transition-colors duration-200 disabled:opacity-50">
+            Save Template
+          </button>
+        </div>
       </form>
     </div>
 
-    <!-- Simulation Status Display -->
-    <div *ngIf="status?.running" class="space-y-8">
-      <h1 class="text-4xl font-light text-gray-900">Simulation Status</h1>
+    <!-- Right Column: Saved Configurations -->
+    <div *ngIf="!status?.running">
+      <h2 class="text-2xl font-light text-gray-900 mb-6">Saved Configurations</h2>
       
-      <!-- Status Cards -->
-      <div class="grid grid-cols-2 gap-6">
-        <!-- Vendor Count -->
-        <div class="bg-gray-50 p-6 rounded-2xl">
-          <div class="text-gray-500 text-lg mb-2">Vendors</div>
-          <div class="text-3xl font-medium text-gray-900">{{status?.vendorCount || 0}}</div>
-        </div>
-        
-        <!-- Customer Count -->
-        <div class="bg-gray-50 p-6 rounded-2xl">
-          <div class="text-gray-500 text-lg mb-2">Customers</div>
-          <div class="text-3xl font-medium text-gray-900">{{status?.customerCount || 0}}</div>
-        </div>
-        
-        <!-- Active Threads -->
-        <div class="col-span-2 bg-gray-50 p-6 rounded-2xl">
-          <div class="text-gray-500 text-lg mb-2">Active Threads</div>
-          <div class="text-3xl font-medium text-gray-900">{{status?.activeThreadCount || 0}}</div>
+      <div class="space-y-4">
+        <div *ngFor="let template of templates" 
+             class="p-4 border rounded-lg hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium">{{template.templateName}}</h3>
+            <div class="space-x-2">
+              <button (click)="loadTemplate(template)"
+                      class="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
+                Use
+              </button>
+              <button (click)="deleteTemplate(template)"
+                      class="px-4 py-2 text-sm bg-red-50 hover:bg-red-100 text-red-600 rounded-full transition-colors">
+                Delete
+              </button>
+            </div>
+          </div>
+          <div class="mt-2 grid grid-cols-2 gap-4 text-sm text-gray-500">
+            <div>Vendors: {{template.vendorCount}}</div>
+            <div>Customers: {{template.customerCount}}</div>
+            <div>Release Rate: {{template.ticketReleaseRate}}</div>
+            <div>Retrieval Rate: {{template.customerRetrievalRate}}</div>
+            <div class="col-span-2">Max Capacity: {{template.maxTicketCapacity}}</div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- Full Width: Simulation Status Display -->
+    <div *ngIf="status?.running" class="col-span-2 space-y-8">
+      <!-- Status Cards -->
+      <div *ngIf="status?.running" class="col-span-2 space-y-8">
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Vendor Management Card -->
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <div class="text-gray-500 text-lg">Vendors</div>
+                <div class="text-3xl font-medium text-gray-900">{{status?.vendorCount || 0}}</div>
+              </div>
+              <div class="flex space-x-2">
+                <button (click)="decreaseVendors()"
+                  class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                  </svg>
+                </button>
+                <button (click)="increaseVendors()"
+                  class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Customer Management Card -->
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <div class="text-gray-500 text-lg">Customers</div>
+                <div class="text-3xl font-medium text-gray-900">{{status?.customerCount || 0}}</div>
+              </div>
+              <div class="flex space-x-2">
+                <button (click)="decreaseCustomers()"
+                  class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                  </svg>
+                </button>
+                <button (click)="increaseCustomers()"
+                  class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      
 
       <!-- Control Buttons -->
       <div class="flex gap-4 pt-4">
@@ -143,7 +172,7 @@
 
     <!-- Error Message -->
     <div *ngIf="errorMessage"
-      class="mt-8 bg-red-50 px-6 py-4 rounded-2xl">
+      class="col-span-2 mt-8 bg-red-50 px-6 py-4 rounded-2xl">
       <p class="text-red-600">{{errorMessage}}</p>
     </div>
   </div>

@@ -1,6 +1,7 @@
 export interface Configuration {
   id?: string;
   eventId: string;
+  templateName: string;
   vendorCount: number;
   customerCount: number;
   ticketReleaseRate: number;

@@ -36,4 +36,20 @@ export class SimulationService {
   getAllSimulations(): Observable<Configuration[]> {
     return this.http.get<Configuration[]>(`${this.apiUrl}/all`);
   }
+  
+  increaseVendorCount(eventId: string, count: number = 1): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/vendors/increase?count=${count}`, {});
+  }
+
+  decreaseVendorCount(eventId: string, count: number = 1): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/vendors/decrease?count=${count}`, {});
+  }
+
+  increaseCustomerCount(eventId: string, count: number = 1): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/customers/increase?count=${count}`, {});
+  }
+
+  decreaseCustomerCount(eventId: string, count: number = 1): Observable<SimulationStatus> {
+    return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/customers/decrease?count=${count}`, {});
+  }
 }
