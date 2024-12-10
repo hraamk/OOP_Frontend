@@ -4,9 +4,12 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SimulationService } from '../../../services/simulation.service';
 import { EventService } from '../../../services/event.service';
+import { ConfigurationService } from '../../../services/configuration.service';
 import { SimulationStatus } from '../../../models/simulation-status.model';
 import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
 import { Configuration } from '../../../models/configuration.model';
+import { ConfigurationTemplate } from '.././../../models/configuration.template.model';
+
 
 @Component({
   selector: 'app-simulation-control',
@@ -24,11 +27,15 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
   status: SimulationStatus | null = null;
   errorMessage: string | null = null;
   private statusSubscription?: Subscription;
+  templates: ConfigurationTemplate[] = [];
+  templateForm: FormGroup;
+  selectedTemplate: ConfigurationTemplate | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private simulationService: SimulationService,
+    private configurationService: ConfigurationService,
     private eventService: EventService
   ) {
     this.eventId = this.route.snapshot.paramMap.get('id') || '';
@@ -38,14 +45,22 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
       customerCount: ['', [Validators.required, Validators.min(1)]],
       ticketReleaseRate: ['', [Validators.required, Validators.min(1)]],
       customerRetrievalRate: ['', [Validators.required, Validators.min(1)]],
-      maxTicketCapacity: ['', [Validators.required, Validators.min(1)]]
+      maxTicketCapacity: ['', [Validators.required, Validators.min(1)]],
+      templateName: [''] // Optional field for template name
+    });
+  
+    // Initialize templateForm
+    this.templateForm = this.fb.group({
+      templateName: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
+
 
   ngOnInit() {
     if (this.eventId) {
       this.loadEventDetails();
       this.checkCurrentStatus();
+      this.loadTemplates();
     }
   }
 
@@ -61,7 +76,7 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
     });
   }
 
-  checkCurrentStatus() {
+  checkCurrentStatus(): void {
     this.simulationService.getSimulationStatus(this.eventId).subscribe({
       next: (status) => {
         this.status = status;
@@ -70,15 +85,96 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
           this.startStatusPolling();
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error checking status:', error);
+        this.errorMessage = 'Failed to check simulation status: ' + (error.error?.message || error.message || 'Unknown error');
+      }
+    });
+  }
+  
+  loadTemplate(template: ConfigurationTemplate): void {
+    this.selectedTemplate = template;
+    this.configForm.patchValue({
+      vendorCount: template.vendorCount,
+      customerCount: template.customerCount,
+      ticketReleaseRate: template.ticketReleaseRate,
+      customerRetrievalRate: template.customerRetrievalRate,
+      maxTicketCapacity: template.maxTicketCapacity
+    });
+  }
+
+
+  saveTemplate(): void {
+    if (this.configForm.valid && this.configForm.get('templateName')?.value) {
+      const formValues = this.configForm.value;
+      const template: ConfigurationTemplate = {
+        vendorCount: formValues.vendorCount,
+        customerCount: formValues.customerCount,
+        ticketReleaseRate: formValues.ticketReleaseRate,
+        customerRetrievalRate: formValues.customerRetrievalRate,
+        maxTicketCapacity: formValues.maxTicketCapacity,
+        templateName: formValues.templateName,
+        eventId: this.eventId,
+        running: false,
+        paused: false
+      };
+  
+      this.configurationService.createConfiguration(template).subscribe({
+        next: (savedTemplate: ConfigurationTemplate) => {
+          this.templates = [...this.templates, savedTemplate];
+          this.configForm.patchValue({ templateName: '' });
+          this.errorMessage = null;
+        },
+        error: (error: Error) => {
+          console.error('Error saving template:', error);
+          this.errorMessage = 'Failed to save configuration template';
+        }
+      });
+    }
+  }
+
+
+
+  loadTemplates(): void {
+    this.configurationService.getConfigurationsByEventId(this.eventId).subscribe({
+      next: (templates: ConfigurationTemplate[]) => {
+        this.templates = templates || [];
+      },
+      error: (error: any) => {
+        console.error('Error loading templates:', error);
+        this.errorMessage = 'Failed to load configuration templates: ' + (error.error?.message || error.message || 'Unknown error');
+        this.templates = [];
       }
     });
   }
 
-  startSimulation() {
-    if (this.configForm.valid && this.eventId) {
-      const config: Configuration = this.configForm.value;
+
+  deleteTemplate(template: ConfigurationTemplate): void {
+    if (template.id) {
+      this.configurationService.deleteConfiguration(template.id).subscribe({
+        next: () => {
+          this.templates = this.templates.filter(t => t.id !== template.id);
+          if (this.selectedTemplate?.id === template.id) {
+            this.selectedTemplate = null;
+          }
+          this.errorMessage = null;
+        },
+        error: (error: Error) => {
+          console.error('Error deleting template:', error);
+          this.errorMessage = 'Failed to delete configuration template';
+        }
+      });
+    }
+  }
+
+  startSimulation() {   
+      if (this.configForm.valid && this.eventId) {
+        const config: Configuration = {
+          ...this.configForm.value,
+          eventId: this.eventId,
+          running: false,
+          paused: false
+        };
       this.simulationService.startSimulation(this.eventId, config)
         .subscribe({
           next: (status) => {

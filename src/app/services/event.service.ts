@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, retry, throwError } from 'rxjs';
 import { Event } from '../models/event.model';
 
 @Injectable({
@@ -24,22 +24,34 @@ export class EventService {
         return throwError(() => new Error(errorMessage));
     }
 
-    getEvents(): Observable<Event[]> {
-      return this.http.get<Event[]>(this.apiUrl)
-          .pipe(catchError(this.handleError));
+  getEvents(): Observable<Event[]> {
+    return this.http.get<Event[]>(this.apiUrl)
+      .pipe(
+        retry(1),
+        catchError(this.handleError)
+      );
   }
 
   getEvent(id: string): Observable<Event> {
-    return this.http.get<Event>(`${this.apiUrl}/${id}`);
+    return this.http.get<Event>(`${this.apiUrl}/${id}`)
+      .pipe(
+        retry(1),
+        catchError(this.handleError)
+      );
   }
 
   createEvent(event: Event): Observable<Event> {
-    //return this.http.post<Event>(this.apiUrl, event);
-    return this.http.post<Event>(this.apiUrl, event);
+    return this.http.post<Event>(this.apiUrl, event)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   updateEvent(id: string, event: Event): Observable<Event> {
-    return this.http.put<Event>(`${this.apiUrl}/${id}`, event);
+    return this.http.put<Event>(`${this.apiUrl}/${id}`, event)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   deleteEvent(id: string): Observable<void> {
@@ -50,4 +62,5 @@ export class EventService {
   getUpcomingEvents(): Observable<Event[]> {
     return this.http.get<Event[]>(`${this.apiUrl}/upcoming`);
   }
+  
 }

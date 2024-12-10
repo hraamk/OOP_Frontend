@@ -6,9 +6,11 @@ import { SimulationControlComponent } from './components/simulation/simulation-c
 import { HomeComponent } from './components/home/home.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  // Admin routes
   { 
+    path: '', 
+    component: HomeComponent 
+  },
+  {
     path: 'admin',
     children: [
       { path: '', redirectTo: 'events', pathMatch: 'full' },
@@ -18,12 +20,13 @@ export const routes: Routes = [
       { path: 'events/:id/simulation', component: SimulationControlComponent }
     ]
   },
-  // Simulation routes
   {
     path: 'simulation',
     children: [
       { path: '', component: SimulationListComponent },
       { path: ':id', component: SimulationControlComponent }
     ]
-  }
+  },
+  // Add a catch-all route at the end
+  { path: '**', redirectTo: '' }
 ];
