@@ -149,6 +149,20 @@
             </div>
           </div>
         </div>
+        <!-- New Ticket Pool Card -->
+  <div class="bg-gray-50 p-6 rounded-2xl">
+    <div class="text-gray-500 text-lg mb-2">Ticket Pool</div>
+    <div class="flex flex-col">
+      <div class="text-3xl font-medium text-gray-900">
+        {{ticketPoolInfo.available}} / {{ticketPoolInfo.capacity}}
+      </div>
+      <div class="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-full bg-green-500 transition-all duration-500"
+             [style.width.%]="(ticketPoolInfo.available / ticketPoolInfo.capacity) * 100">
+        </div>
+      </div>
+    </div>
+  </div>
       
 
       <!-- Control Buttons -->
@@ -175,5 +189,13 @@
       class="col-span-2 mt-8 bg-red-50 px-6 py-4 rounded-2xl">
       <p class="text-red-600">{{errorMessage}}</p>
     </div>
+    <!-- Add this somewhere in your template for debugging -->
+<div *ngIf="status?.running" class="text-sm text-gray-500 mt-2">
+  Debug Info:
+  <pre>
+    Ticket Pool: {{ticketPoolInfo | json}}
+    <!--WebSocket Status: {{webSocketService.client?.connected ? 'Connected' : 'Disconnected'}} -->
+  </pre>
+</div>
   </div>
 </div>

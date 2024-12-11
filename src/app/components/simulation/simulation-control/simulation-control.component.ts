@@ -6,6 +6,7 @@ import { SimulationService } from '../../../services/simulation.service';
 import { EventService } from '../../../services/event.service';
 import { ConfigurationService } from '../../../services/configuration.service';
 import { SimulationStatus } from '../../../models/simulation-status.model';
+import { WebSocketService } from '../../../services/websocket.service';
 import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
 import { Configuration } from '../../../models/configuration.model';
 import { ConfigurationTemplate } from '.././../../models/configuration.template.model';
@@ -30,13 +31,17 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
   templates: ConfigurationTemplate[] = [];
   templateForm: FormGroup;
   selectedTemplate: ConfigurationTemplate | null = null;
+  ticketPoolInfo: { available: number, capacity: number } = { available: 0, capacity: 0 };
+  private webSocketSubscription?: Subscription;
+
 
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private simulationService: SimulationService,
     private configurationService: ConfigurationService,
-    private eventService: EventService
+    private eventService: EventService,
+    private webSocketService: WebSocketService
   ) {
     this.eventId = this.route.snapshot.paramMap.get('id') || '';
     
@@ -61,6 +66,8 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
       this.loadEventDetails();
       this.checkCurrentStatus();
       this.loadTemplates();
+      console.log('Initializing WebSocket connection for event:', this.eventId);
+      this.subscribeToTicketUpdates();
     }
   }
 
@@ -75,6 +82,22 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
       }
     });
   }
+  private subscribeToTicketUpdates() {
+    // No need to call subscribeToTicketUpdates since we removed that method
+    this.webSocketSubscription = this.webSocketService.ticketUpdates$.subscribe(
+      update => {
+        if (update && update.eventId === this.eventId) {
+          console.log('Received ticket update:', update);
+          this.ticketPoolInfo = {
+            available: update.availableTickets,
+            capacity: update.totalCapacity
+          };
+        }
+      },
+      error => console.error('WebSocket error:', error)
+    );
+  }
+
 
   checkCurrentStatus(): void {
     this.simulationService.getSimulationStatus(this.eventId).subscribe({
@@ -329,6 +352,7 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
       });
     }
   }
+  
 
 
   private stopStatusPolling() {
@@ -339,5 +363,9 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopStatusPolling();
+    if (this.webSocketSubscription) {
+      this.webSocketSubscription.unsubscribe();
+    }
+    this.webSocketService.disconnect();
   }
 }
