@@ -189,13 +189,5 @@
       class="col-span-2 mt-8 bg-red-50 px-6 py-4 rounded-2xl">
       <p class="text-red-600">{{errorMessage}}</p>
     </div>
-    <!-- Add this somewhere in your template for debugging -->
-<div *ngIf="status?.running" class="text-sm text-gray-500 mt-2">
-  Debug Info:
-  <pre>
-    Ticket Pool: {{ticketPoolInfo | json}}
-    <!--WebSocket Status: {{webSocketService.client?.connected ? 'Connected' : 'Disconnected'}} -->
-  </pre>
-</div>
   </div>
 </div>
