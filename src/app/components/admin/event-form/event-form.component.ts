@@ -47,7 +47,7 @@ export class EventFormComponent implements OnInit {
         this.eventForm.patchValue({
           name: event.name,
           description: event.description,
-          totalTickets: event.totalTickets,
+
           price: event.price,
           eventDate: new Date(event.eventDate).toISOString().slice(0, 16)
         });

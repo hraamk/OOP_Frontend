@@ -48,6 +48,7 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
     this.configForm = this.fb.group({
       vendorCount: ['', [Validators.required, Validators.min(1)]],
       customerCount: ['', [Validators.required, Validators.min(1)]],
+      totalTickets: ['', [Validators.required, Validators.min(1)]],
       ticketReleaseRate: ['', [Validators.required, Validators.min(1)]],
       customerRetrievalRate: ['', [Validators.required, Validators.min(1)]],
       maxTicketCapacity: ['', [Validators.required, Validators.min(1)]],
@@ -120,6 +121,7 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
     this.configForm.patchValue({
       vendorCount: template.vendorCount,
       customerCount: template.customerCount,
+      totalTickets: template.totalTickets,
       ticketReleaseRate: template.ticketReleaseRate,
       customerRetrievalRate: template.customerRetrievalRate,
       maxTicketCapacity: template.maxTicketCapacity
@@ -133,6 +135,7 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
       const template: ConfigurationTemplate = {
         vendorCount: formValues.vendorCount,
         customerCount: formValues.customerCount,
+        totalTickets: formValues.totalTickets,
         ticketReleaseRate: formValues.ticketReleaseRate,
         customerRetrievalRate: formValues.customerRetrievalRate,
         maxTicketCapacity: formValues.maxTicketCapacity,

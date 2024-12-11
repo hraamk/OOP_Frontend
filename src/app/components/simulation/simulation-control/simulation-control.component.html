@@ -19,6 +19,12 @@
           </div>
 
           <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
+            <input type="number" formControlName="totalTickets"
+              class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
+              placeholder="Total Tickets">
+          </div>
+          
+          <div class="transition-all duration-200 focus-within:transform focus-within:-translate-y-1">
             <input type="number" formControlName="ticketReleaseRate"
               class="w-full text-lg pb-2 border-b border-gray-300 focus:border-gray-900 outline-none transition-colors placeholder-gray-400"
               placeholder="Ticket Release Rate">
@@ -88,6 +94,7 @@
           <div class="mt-2 grid grid-cols-2 gap-4 text-sm text-gray-500">
             <div>Vendors: {{template.vendorCount}}</div>
             <div>Customers: {{template.customerCount}}</div>
+            <div>Total Tickets: {{template.totalTickets}}</div>
             <div>Release Rate: {{template.ticketReleaseRate}}</div>
             <div>Retrieval Rate: {{template.customerRetrievalRate}}</div>
             <div class="col-span-2">Max Capacity: {{template.maxTicketCapacity}}</div>
