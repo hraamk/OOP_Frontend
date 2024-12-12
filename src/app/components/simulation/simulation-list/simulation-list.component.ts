@@ -46,10 +46,6 @@ import { Event } from '../../../models/event.model';
               <span class="text-gray-900">{{event.eventDate | date:'medium'}}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-500">Available Tickets</span>
-              <span class="text-gray-900">{{event.totalTickets}}</span>
-            </div>
-            <div class="flex justify-between items-center">
               <span class="text-gray-500">Price</span>
               <span class="text-gray-900">{{event.price | currency}}</span>
             </div>
