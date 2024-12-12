@@ -52,4 +52,6 @@ export class SimulationService {
   decreaseCustomerCount(eventId: string, count: number = 1): Observable<SimulationStatus> {
     return this.http.post<SimulationStatus>(`${this.apiUrl}/${eventId}/customers/decrease?count=${count}`, {});
   }
+
+  
 }

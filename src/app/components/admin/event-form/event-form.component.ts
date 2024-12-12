@@ -25,7 +25,6 @@ export class EventFormComponent implements OnInit {
     this.eventForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
-      totalTickets: ['', [Validators.required, Validators.min(1)]],
       price: ['', [Validators.required, Validators.min(0)]],
       eventDate: ['', Validators.required]
     });

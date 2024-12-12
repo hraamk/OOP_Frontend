@@ -10,6 +10,7 @@ import { WebSocketService } from '../../../services/websocket.service';
 import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
 import { Configuration } from '../../../models/configuration.model';
 import { ConfigurationTemplate } from '.././../../models/configuration.template.model';
+import { TicketService } from '../../../services/ticket.service';
 
 
 @Component({
@@ -33,6 +34,13 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
   selectedTemplate: ConfigurationTemplate | null = null;
   ticketPoolInfo: { available: number, capacity: number } = { available: 0, capacity: 0 };
   private webSocketSubscription?: Subscription;
+  tickets: any[] = [];
+  isSimulationComplete = false;
+  simulationStats = {
+    totalTickets: 0,
+    soldTickets: 0,
+    availableTickets: 0
+  };
 
 
   constructor(
@@ -41,7 +49,8 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
     private simulationService: SimulationService,
     private configurationService: ConfigurationService,
     private eventService: EventService,
-    private webSocketService: WebSocketService
+    private webSocketService: WebSocketService,
+    private ticketService: TicketService
   ) {
     this.eventId = this.route.snapshot.paramMap.get('id') || '';
     
@@ -97,6 +106,98 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
       },
       error => console.error('WebSocket error:', error)
     );
+  }
+  private updateSimulationStats(): void {
+    if (!this.eventId) return;
+
+    // Get total tickets count
+    this.ticketService.getTicketCount(this.eventId).subscribe({
+      next: (total) => {
+        this.simulationStats.totalTickets = total;
+        
+        // Get sold tickets count
+        this.ticketService.getTicketCount(this.eventId, 'SOLD').subscribe({
+          next: (sold) => {
+            this.simulationStats.soldTickets = sold;
+            this.simulationStats.availableTickets = total - sold;
+          },
+          error: (error) => console.error('Error getting sold ticket count:', error)
+        });
+      },
+      error: (error) => console.error('Error getting total ticket count:', error)
+    });
+  }
+  
+  private startStatusPolling() {
+    this.stopStatusPolling();
+    
+    let wasRunning = this.isSimulationRunning;
+  
+    this.statusSubscription = interval(2000)
+      .pipe(
+        takeWhile(() => wasRunning || this.isSimulationRunning),
+        switchMap(() => this.simulationService.getSimulationStatus(this.eventId))
+      )
+      .subscribe({
+        next: (status) => {
+          // Store previous running state
+          wasRunning = this.isSimulationRunning;
+          
+          // Update current state
+          this.status = status;
+          this.isSimulationRunning = status.running;
+          
+          // Check for simulation completion
+          if (wasRunning && !status.running) {
+            console.log('Simulation completed, showing stats');
+            this.isSimulationComplete = true;
+            this.updateSimulationStats();
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching status:', error);
+          this.errorMessage = 'Failed to fetch simulation status.';
+        }
+      });
+  }
+
+  
+  closeSimulation() {
+    this.isSimulationComplete = false;
+    this.isSimulationRunning = false;
+    this.isPaused = false;
+    this.status = null;
+    this.stopStatusPolling();
+    
+    // Reset stats
+    this.simulationStats = {
+      totalTickets: 0,
+      soldTickets: 0,
+      availableTickets: 0
+    };
+    
+    // Reset form
+    this.configForm.reset();
+    
+    // Clear any error messages
+    this.errorMessage = null;
+  }
+
+
+
+  fetchTickets() {
+    if (this.eventId) {
+      this.ticketService.getTicketsByEventId(this.eventId).subscribe({
+        next: (data) => {
+          this.tickets = data;
+          console.log('Fetched tickets:', this.tickets);
+        },
+        error: (error) => {
+          console.error('Error fetching tickets:', error);
+          this.errorMessage = 'Failed to fetch tickets';
+        }
+      });
+    }
   }
 
 
@@ -236,6 +337,10 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
             this.isSimulationRunning = false;
             this.isPaused = false;
             this.stopStatusPolling();
+            
+            // Show completion dialog when manually stopped
+            this.isSimulationComplete = true;
+            this.updateSimulationStats();
           },
           error: (error) => {
             console.error('Error stopping simulation:', error);
@@ -277,25 +382,7 @@ export class SimulationControlComponent implements OnInit, OnDestroy {
     }
   }
 
-  private startStatusPolling() {
-    this.stopStatusPolling(); // Clear any existing polling
-
-    this.statusSubscription = interval(2000)
-      .pipe(
-        takeWhile(() => this.isSimulationRunning),
-        switchMap(() => this.simulationService.getSimulationStatus(this.eventId))
-      )
-      .subscribe({
-        next: (status) => {
-          this.status = status;
-          this.isSimulationRunning = status.running;
-        },
-        error: (error) => {
-          console.error('Error fetching status:', error);
-          this.errorMessage = 'Failed to fetch simulation status.';
-        }
-      });
-  }
+  
   increaseVendors(count: number = 1) {
     if (this.eventId) {
       this.simulationService.increaseVendorCount(this.eventId, count).subscribe({
